@@ -15,7 +15,7 @@ const createAJob = async (req,res) => {
              [company, position, status, applied_date, notes]);
              res.status(201).json({ message: "Job added successfully", job: response.rows[0] });
     } catch (error) {
-        console.error("Error inserting job:", error);
+        console.error("Error creating job:", error);
         res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
     
@@ -42,7 +42,7 @@ const retriveAParticularJob = async (req,res) => {
 
         res.status(200).json({job: response.rows[0]})
     } catch (error) {
-        console.error("Error retrieving a chosen job:", error);
+        console.error("Error retrieving job:", error);
         res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 }
@@ -76,10 +76,26 @@ const updateAJob = async (req, res) => {
     
             res.status(200).json({ message: "Job updated successfully", job: response.rows[0]})
     } catch (error) {
-        console.error("Error retrieving a chosen job:", error);
+        console.error("Error updating job:", error);
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+}
+
+const deleteAJob = async (req,res) => {
+    try {
+        const {id} = req.params;
+        const response = await db.query(`DELETE FROM jobs WHERE id = $1 RETURNING *`, [id]);
+
+        if (response.rowCount === 0) {
+            return res.status(404).json({ message: "Job not found" });
+        }
+
+        res.status(200).json({ message: "Job deleted successfully", job: response.rows[0]})
+    } catch (error) {
+        console.error("Error deleting job:", error);
         res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 }
 
 
-module.exports = { createAJob, retriveJobs, retriveAParticularJob, updateAJob }
+module.exports = { createAJob, retriveJobs, retriveAParticularJob, updateAJob, deleteAJob }
