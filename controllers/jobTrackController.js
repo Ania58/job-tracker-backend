@@ -4,7 +4,13 @@ const db = require("../config/db");
 
 const createAJob = async (req,res) => {
     try {
-        const {company, position, status, applied_date, notes} = req.body;
+        const {company, position, status = "Applied", applied_date, notes} = req.body;
+
+        const allowedStatuses = ["Applied", "Interviewing", "Offer", "Rejected", "Ghosted"];
+        if (!allowedStatuses.includes(status)) {
+            return res.status(400).json({ message: `Invalid status. Allowed statuses: ${allowedStatuses.join(", ")}` });
+        }
+
         const response = await db.query(`INSERT INTO jobs (company, position, status, applied_date, notes) VALUES ($1, $2, $3, $4, $5) RETURNING*`,
              [company, position, status, applied_date, notes]);
              res.status(201).json({ message: "Job added successfully", job: response.rows[0] });
