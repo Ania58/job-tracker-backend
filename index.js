@@ -3,11 +3,29 @@ const app = express();
 const PORT = 3000;
 const bodyParser = require("body-parser");
 
+require("dotenv").config();
+
+const session = require("express-session");
+const passport = require("passport");
+const authRoutes = require("./routes/authRoutes"); 
+require("./config/passport");
+
 const jobRoutes = require("./routes/jobTrackRoutes"); 
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(
+    session({
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: true,
+    })
+  );
+
+app.use(passport.initialize());
+app.use(passport.session());
 app.use("/", jobRoutes);
+app.use(authRoutes);
 
 
 
