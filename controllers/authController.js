@@ -40,4 +40,11 @@ const googleSuccess = (req, res) => {
     res.json({ message: "Google login successful", user: req.user });
 };
 
-module.exports = { registerUser, loginUser, googleAuth, googleCallback, googleSuccess };
+const logoutUser = (req, res) => {
+    req.logout((err) => {
+        if (err) return next(err);
+        res.json({ message: "Logged out successfully" });
+    });
+};
+
+module.exports = { registerUser, loginUser, googleAuth, googleCallback, googleSuccess, logoutUser };
