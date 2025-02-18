@@ -11,8 +11,12 @@ const createAJob = async (req,res) => {
             return res.status(400).json({ message: `Invalid status. Allowed statuses: ${allowedStatuses.join(", ")}` });
         }
 
-        const response = await db.query(`INSERT INTO jobs (company, position, status, applied_date, notes) VALUES ($1, $2, $3, $4, $5) RETURNING*`,
-             [company, position, status, applied_date, notes]);
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const response = await db.query(`INSERT INTO jobs (user_id, company, position, status, applied_date, notes) VALUES ($1, $2, $3, $4, $5) RETURNING*`,
+             [req.user.id, company, position, status, applied_date, notes]);
              res.status(201).json({ message: "Job added successfully", job: response.rows[0] });
     } catch (error) {
         console.error("Error creating job:", error);
@@ -23,7 +27,15 @@ const createAJob = async (req,res) => {
 
 const retriveJobs = async (req,res) => {
     try {
-        const response = await db.query("SELECT * FROM jobs")
+
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        const response = await db.query("SELECT * FROM jobs WHERE user_id = $1", [req.user.id]);
+
+        if (response.rows.length === 0) {
+            return res.status(404).json({ message: "No jobs found for this user" });
+        }
         res.status(200).json({job: response.rows})
     } catch (error) {
         console.error("Error retrieving jobs:", error);
