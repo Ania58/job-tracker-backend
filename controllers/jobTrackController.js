@@ -46,10 +46,15 @@ const retriveJobs = async (req,res) => {
 const retriveAParticularJob = async (req,res) => {
     try {
         const {id} = req.params;
-        const response = await db.query(`SELECT * FROM jobs WHERE id = $1`, [id]);
+
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const response = await db.query(`SELECT * FROM jobs WHERE id = $1 AND user_id = $2`, [id, req.user.id]);
 
         if (response.rows.length === 0) {
-            return res.status(404).json({ message: "Job not found" });
+            return res.status(404).json({ message: "Job not found or you do not have permission to view this job" });
         }
 
         res.status(200).json({job: response.rows[0]})
@@ -64,6 +69,10 @@ const updateAJob = async (req, res) => {
         const {id} = req.params;
         const updates = req.body;
 
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
         if (Object.keys(updates).length === 0) {
             return res.status(400).json({ message: "No fields provided for update" });
         }
@@ -75,16 +84,17 @@ const updateAJob = async (req, res) => {
             }
         }
 
+        const jobCheck = await db.query("SELECT * FROM jobs WHERE id = $1 AND user_id = $2", [id, req.user.id]);
+        if (jobCheck.rows.length === 0) {
+            return res.status(404).json({ message: "Job not found or you do not have permission to update this job" });
+        }
+
         const fields = Object.keys(updates).map((key, index) => `${key} = $${index + 1}`).join(", ");
         const values = Object.values(updates);
         values.push(id);
 
         const query = `UPDATE jobs SET ${fields}, updated_at = CURRENT_TIMESTAMP WHERE id = $${values.length} RETURNING *`;
         const response = await db.query(query, values);
-
-            if (response.rows.length === 0) {
-                return res.status(404).json({ message: "Job not found" });
-            }
     
             res.status(200).json({ message: "Job updated successfully", job: response.rows[0]})
     } catch (error) {
@@ -96,11 +106,17 @@ const updateAJob = async (req, res) => {
 const deleteAJob = async (req,res) => {
     try {
         const {id} = req.params;
-        const response = await db.query(`DELETE FROM jobs WHERE id = $1 RETURNING *`, [id]);
 
-        if (response.rowCount === 0) {
-            return res.status(404).json({ message: "Job not found" });
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized" });
         }
+
+        const jobCheck = await db.query("SELECT * FROM jobs WHERE id = $1 AND user_id = $2", [id, req.user.id]);
+        if (jobCheck.rowCount === 0 === 0) {
+            return res.status(404).json({ message: "Job not found or you do not have permission to delete this job" });
+        }
+
+        const response = await db.query(`DELETE FROM jobs WHERE id = $1 RETURNING *`, [id]);
 
         res.status(200).json({ message: "Job deleted successfully", job: response.rows[0]})
     } catch (error) {
