@@ -15,7 +15,7 @@ const createAJob = async (req,res) => {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        const response = await db.query(`INSERT INTO jobs (user_id, company, position, status, applied_date, notes) VALUES ($1, $2, $3, $4, $5) RETURNING*`,
+        const response = await db.query(`INSERT INTO jobs (user_id, company, position, status, applied_date, notes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING*`,
              [req.user.id, company, position, status, applied_date, notes]);
              res.status(201).json({ message: "Job added successfully", job: response.rows[0] });
     } catch (error) {
