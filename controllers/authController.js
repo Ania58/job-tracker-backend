@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const db = require("../config/db");
 const saltRounds = 10;
+const passport = require("passport");
 
 const registerUser = async (req, res) => {
     const { email, password } = req.body;
@@ -31,4 +32,12 @@ const loginUser = (req, res) => {
     res.json({ message: "Login successful", user: req.user });
 };
 
-module.exports = { registerUser, loginUser };
+const googleAuth = passport.authenticate("google", { scope: ["profile", "email"] });
+
+const googleCallback = passport.authenticate("google", { failureRedirect: "/login" });
+
+const googleSuccess = (req, res) => {
+    res.json({ message: "Google login successful", user: req.user });
+};
+
+module.exports = { registerUser, loginUser, googleAuth, googleCallback, googleSuccess };
