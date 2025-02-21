@@ -27,7 +27,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use("/", jobRoutes);
-app.use(authRoutes);
+app.use("/auth", authRoutes);
 
 
 

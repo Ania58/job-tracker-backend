@@ -7,8 +7,8 @@ const router = express.Router();
 router.post("/register", registerUser);
 router.post("/login", passport.authenticate("local"), loginUser);
 router.get("/user", getUser);
-router.get("/auth/google", googleAuth);
-router.get("/auth/google/callback", googleCallback, googleSuccess);
+router.get("/google", googleAuth);
+router.get("/google/callback", googleCallback, googleSuccess);
 router.get("/logout", logoutUser);
 
 module.exports = router;
