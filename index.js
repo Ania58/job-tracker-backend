@@ -15,7 +15,13 @@ const jobRoutes = require("./routes/jobTrackRoutes");
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cors());
+app.use(
+  cors({
+      origin: process.env.CLIENT_URL, 
+      credentials: true, 
+      methods: "GET,POST,PATCH,DELETE",
+  })
+);
 app.use(
     session({
       secret: process.env.SESSION_SECRET,
