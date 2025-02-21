@@ -32,6 +32,13 @@ const loginUser = (req, res) => {
     res.json({ message: "Login successful", user: req.user });
 };
 
+const getUser = (req, res) => {
+    if (req.isAuthenticated()) {
+        return res.json({ user: req.user });
+    }
+    res.status(401).json({ message: "Not authenticated" });
+};
+
 const googleAuth = passport.authenticate("google", { scope: ["profile", "email"] });
 
 const googleCallback = passport.authenticate("google", { failureRedirect: "/login" });
@@ -47,4 +54,4 @@ const logoutUser = (req, res) => {
     });
 };
 
-module.exports = { registerUser, loginUser, googleAuth, googleCallback, googleSuccess, logoutUser };
+module.exports = { registerUser, loginUser, getUser, googleAuth, googleCallback, googleSuccess, logoutUser };
