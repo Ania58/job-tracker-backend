@@ -20,6 +20,7 @@ app.use(
       origin: process.env.CLIENT_URL, 
       credentials: true, 
       methods: "GET,POST,PATCH,DELETE",
+      allowedHeaders: ["Content-Type", "Authorization"],  
   })
 );
 app.use(
@@ -30,7 +31,7 @@ app.use(
       cookie: {
         secure: process.env.NODE_ENV === "production", 
         httpOnly: true,
-        sameSite: "lax",
+        sameSite: "none",
     },
     })
   );
