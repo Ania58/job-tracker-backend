@@ -44,7 +44,7 @@ const googleAuth = passport.authenticate("google", { scope: ["profile", "email"]
 const googleCallback = passport.authenticate("google", { failureRedirect: "/login" });
 
 const googleSuccess = (req, res) => {
-    res.redirect(`${process.env.CLIENT_URL}`);
+    res.redirect(`${process.env.CLIENT_URL}/auth/user`);
 };
 
 /*const logoutUser = (req, res) => {
