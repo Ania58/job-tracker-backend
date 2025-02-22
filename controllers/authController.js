@@ -47,10 +47,25 @@ const googleSuccess = (req, res) => {
     res.json({ message: "Google login successful", user: req.user });
 };
 
-const logoutUser = (req, res) => {
+/*const logoutUser = (req, res) => {
     req.logout((err) => {
         if (err) return next(err);
         res.json({ message: "Logged out successfully" });
+    });
+};*/
+
+const logoutUser = (req, res) => {
+    req.logout((err) => {
+        if (err) {
+            return res.status(500).json({ message: "Logout failed" });
+        }
+        req.session.destroy((err) => {
+            if (err) {
+                return res.status(500).json({ message: "Session destruction failed" });
+            }
+            res.clearCookie("connect.sid", { path: "/", secure: true, sameSite: "none" });
+            return res.json({ message: "Logged out successfully" });
+        });
     });
 };
 
