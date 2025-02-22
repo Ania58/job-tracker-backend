@@ -33,8 +33,9 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      passReqToCallback: true,
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (req, accessToken, refreshToken, profile, done) => {
       try {
         const result = await db.query("SELECT * FROM users WHERE google_id = $1", [profile.id]);
 
@@ -51,7 +52,7 @@ passport.use(
           if (err) return done(err);
           return done(null, user);
         });
-        
+
       } catch (err) {
         return done(err);
       }
