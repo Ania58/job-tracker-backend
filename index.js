@@ -7,6 +7,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const session = require("express-session");
+const pgSession = require("connect-pg-simple")(session);
 const passport = require("passport");
 const authRoutes = require("./routes/authRoutes"); 
 require("./config/passport");
@@ -27,6 +28,10 @@ app.use(
 app.set("trust proxy", 1);
 app.use(
     session({
+      store: new pgSession({
+        pool: db, 
+        tableName: "session",
+      }),
       secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
