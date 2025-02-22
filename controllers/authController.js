@@ -41,7 +41,21 @@ const getUser = (req, res) => {
 
 const googleAuth = passport.authenticate("google", { scope: ["profile", "email"] });
 
-const googleCallback = passport.authenticate("google", { failureRedirect: "/login" });
+//const googleCallback = passport.authenticate("google", { failureRedirect: "/login" });
+
+const googleCallback = (req, res, next) => {
+    passport.authenticate("google", (err, user) => {
+        if (err || !user) {
+            return res.redirect(`${process.env.CLIENT_URL}/login?error=true`);
+        }
+        req.login(user, (loginErr) => {
+            if (loginErr) {
+                return res.redirect(`${process.env.CLIENT_URL}/login?error=true`);
+            }
+            return res.redirect(`${process.env.CLIENT_URL}`);
+        });
+    })(req, res, next);
+};
 
 const googleSuccess = (req, res) => {
     res.redirect(`${process.env.CLIENT_URL}/auth/user`);
