@@ -37,6 +37,7 @@ passport.use(
     },
     async (req, accessToken, refreshToken, profile, done) => {
       try {
+        let user;
         const result = await db.query("SELECT * FROM users WHERE google_id = $1", [profile.id]);
 
         if (result.rows.length === 0) {
