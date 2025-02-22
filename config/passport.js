@@ -43,10 +43,15 @@ passport.use(
             "INSERT INTO users (email, google_id) VALUES ($1, $2) RETURNING *",
             [profile.email, profile.id]
           );
-          return done(null, newUser.rows[0]);
+          user = newUser.rows[0];
         } else {
-          return done(null, result.rows[0]);
+          user = result.rows[0];
         }
+        req.login(user, (err) => {
+          if (err) return done(err);
+          return done(null, user);
+        });
+        
       } catch (err) {
         return done(err);
       }
