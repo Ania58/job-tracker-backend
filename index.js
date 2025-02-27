@@ -16,7 +16,7 @@ const jobRoutes = require("./routes/jobTrackRoutes");
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
 const allowedOrigins = [
-  "http://localhost:5137",  
+  "http://localhost:5173",  
    process.env.CLIENT_URL
 ];
 app.use(
