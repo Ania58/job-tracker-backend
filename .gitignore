@@ -138,3 +138,6 @@ dist
 
 # sql related
 *.sql
+
+# Ignore all CSV files
+*.csv
