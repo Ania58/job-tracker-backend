@@ -15,9 +15,20 @@ const jobRoutes = require("./routes/jobTrackRoutes");
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
+const allowedOrigins = [
+  "http://localhost:5137",  
+   process.env.CLIENT_URL
+];
 app.use(
   cors({
-      origin: process.env.CLIENT_URL, 
+      origin:  function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          console.error("Blocked by CORS:", origin);
+          callback(new Error("CORS blocked this request"));
+        }
+      },
       credentials: true, 
       methods: "GET,POST,PATCH,DELETE",
       allowedHeaders: ["Content-Type", "Authorization"],  
